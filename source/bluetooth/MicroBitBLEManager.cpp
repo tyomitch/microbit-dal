@@ -45,7 +45,6 @@ DEALINGS IN THE SOFTWARE.
 extern "C"
 {
 #include "device_manager.h"
-uint32_t btle_set_gatt_table_size(uint32_t size);
 }
 
 /*
@@ -221,10 +220,6 @@ void MicroBitBLEManager::init(ManagedString deviceName, ManagedString serialNumb
 #endif
 
     // Start the BLE stack.
-#if CONFIG_ENABLED(MICROBIT_HEAP_REUSE_SD)
-    btle_set_gatt_table_size(MICROBIT_SD_GATT_TABLE_SIZE);
-#endif
-
     ble = new BLEDevice();
     ble->init();
 
