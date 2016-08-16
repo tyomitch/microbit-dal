@@ -73,8 +73,8 @@ MicroBitMagnetometerService::MicroBitMagnetometerService(BLEDevice &_ble, MicroB
     magnetometerBearingCharacteristicHandle = magnetometerBearingCharacteristic.getValueHandle();
     magnetometerPeriodCharacteristicHandle = magnetometerPeriodCharacteristic.getValueHandle();
 
-    ble.gattServer().notify(magnetometerDataCharacteristicHandle,(uint8_t *)magnetometerDataCharacteristicBuffer, sizeof(magnetometerDataCharacteristicBuffer));
-    ble.gattServer().notify(magnetometerBearingCharacteristicHandle,(uint8_t *)&magnetometerBearingCharacteristicBuffer, sizeof(magnetometerBearingCharacteristicBuffer));
+    ble.gattServer().write(magnetometerDataCharacteristicHandle,(uint8_t *)magnetometerDataCharacteristicBuffer, sizeof(magnetometerDataCharacteristicBuffer));
+    ble.gattServer().write(magnetometerBearingCharacteristicHandle,(uint8_t *)&magnetometerBearingCharacteristicBuffer, sizeof(magnetometerBearingCharacteristicBuffer));
     ble.gattServer().write(magnetometerPeriodCharacteristicHandle, (const uint8_t *)&magnetometerPeriodCharacteristicBuffer, sizeof(magnetometerPeriodCharacteristicBuffer));
 
     ble.onDataWritten(this, &MicroBitMagnetometerService::onDataWritten);
@@ -110,12 +110,12 @@ void MicroBitMagnetometerService::magnetometerUpdate(MicroBitEvent)
         magnetometerPeriodCharacteristicBuffer = compass.getPeriod();
 
         ble.gattServer().write(magnetometerPeriodCharacteristicHandle, (const uint8_t *)&magnetometerPeriodCharacteristicBuffer, sizeof(magnetometerPeriodCharacteristicBuffer));
-        ble.gattServer().notify(magnetometerDataCharacteristicHandle,(uint8_t *)magnetometerDataCharacteristicBuffer, sizeof(magnetometerDataCharacteristicBuffer));
+        ble.gattServer().write(magnetometerDataCharacteristicHandle,(uint8_t *)magnetometerDataCharacteristicBuffer, sizeof(magnetometerDataCharacteristicBuffer));
 
         if (compass.isCalibrated())
         {
             magnetometerBearingCharacteristicBuffer = (uint16_t) compass.heading();
-            ble.gattServer().notify(magnetometerBearingCharacteristicHandle,(uint8_t *)&magnetometerBearingCharacteristicBuffer, sizeof(magnetometerBearingCharacteristicBuffer));
+            ble.gattServer().write(magnetometerBearingCharacteristicHandle,(uint8_t *)&magnetometerBearingCharacteristicBuffer, sizeof(magnetometerBearingCharacteristicBuffer));
         }
     }
 }

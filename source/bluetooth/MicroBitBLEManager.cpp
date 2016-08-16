@@ -40,7 +40,7 @@ DEALINGS IN THE SOFTWARE.
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
 
-#include "ble.h"
+#include "BLE.h"
 
 extern "C"
 {
@@ -123,52 +123,6 @@ static void bleDisconnectionCallback(const Gap::DisconnectionCallbackParams_t *r
 static void bleConnectionCallback(const Gap::ConnectionCallbackParams_t*)
 {
     MicroBitEvent(MICROBIT_ID_BLE,MICROBIT_BLE_EVT_CONNECTED);
-}
-
-/**
-  * Callback when a BLE SYS_ATTR_MISSING.
-  */
-static void bleSysAttrMissingCallback(const GattSysAttrMissingCallbackParams *params)
-{
-    int complete = 0;
-    deviceID = 255;
-
-    dm_handle_t dm_handle = {0,0,0,0};
-
-    int ret = dm_handle_get(params->connHandle, &dm_handle);
-
-    if (ret == 0)
-        deviceID = dm_handle.device_id;
-
-    if(manager->storage != NULL && deviceID < MICROBIT_BLE_MAXIMUM_BONDS)
-    {
-        ManagedString key("bleSysAttrs");
-
-        KeyValuePair* bleSysAttrs = manager->storage->get(key);
-
-        BLESysAttributeStore attribStore;
-        BLESysAttribute attrib;
-
-        if(bleSysAttrs != NULL)
-        {
-            //restore our sysAttrStore
-            memcpy(&attribStore, bleSysAttrs->value, sizeof(BLESysAttributeStore));
-            delete bleSysAttrs;
-
-            attrib = attribStore.sys_attrs[deviceID];
-
-            ret = sd_ble_gatts_sys_attr_set(params->connHandle, attrib.sys_attr, sizeof(attrib.sys_attr), BLE_GATTS_SYS_ATTR_FLAG_SYS_SRVCS);
-
-            complete = 1;
-
-            if(ret == 0)
-                ret = sd_ble_gatts_service_changed(params->connHandle, 0x000c, 0xffff);
-        }
-    }
-
-    if (!complete)
-        sd_ble_gatts_sys_attr_set(params->connHandle, NULL, 0, 0);
-
 }
 
 static void passkeyDisplayCallback(Gap::Handle_t handle, const SecurityManager::Passkey_t passkey)
@@ -276,7 +230,6 @@ void MicroBitBLEManager::init(ManagedString deviceName, ManagedString serialNumb
 
     // automatically restart advertising after a device disconnects.
     ble->gap().onDisconnection(bleDisconnectionCallback);
-    ble->gattServer().onSysAttrMissing(bleSysAttrMissingCallback);
 
     // generate an event when a Bluetooth connection is established
     ble->gap().onConnection(bleConnectionCallback);
@@ -297,19 +250,6 @@ void MicroBitBLEManager::init(ManagedString deviceName, ManagedString serialNumb
     ble->securityManager().onPasskeyDisplay(passkeyDisplayCallback);
     ble->securityManager().onSecuritySetupCompleted(securitySetupCompletedCallback);
     ble->securityManager().init(enableBonding, (SecurityManager::MICROBIT_BLE_SECURITY_LEVEL == SecurityManager::SECURITY_MODE_ENCRYPTION_WITH_MITM), SecurityManager::IO_CAPS_DISPLAY_ONLY);
-
-    if (enableBonding)
-    {
-        // If we're in pairing mode, review the size of the bond table.
-        int bonds = getBondCount();
-
-        // TODO: It would be much better to implement some sort of LRU/NFU policy here,
-        // but this isn't currently supported in mbed, so we'd need to layer break...
-
-        // If we're full, empty the bond table.
-        if (bonds >= MICROBIT_BLE_MAXIMUM_BONDS)
-            ble->securityManager().purgeAllBondingState();
-    }
 
 #if CONFIG_ENABLED(MICROBIT_BLE_WHITELIST)
     // Configure a whitelist to filter all connection requetss from unbonded devices.
@@ -400,21 +340,6 @@ int MicroBitBLEManager::setTransmitPower(int power)
         return MICROBIT_NOT_SUPPORTED;
 
     return MICROBIT_OK;
-}
-
-/**
- * Determines the number of devices currently bonded with this micro:bit.
- * @return The number of active bonds.
- */
-int MicroBitBLEManager::getBondCount()
-{
-    BLEProtocol::Address_t bondedAddresses[MICROBIT_BLE_MAXIMUM_BONDS];
-    Gap::Whitelist_t whitelist;
-    whitelist.addresses = bondedAddresses;
-    whitelist.capacity = MICROBIT_BLE_MAXIMUM_BONDS;
-    ble->securityManager().getAddressesFromBondTable(whitelist);
-
-    return whitelist.bonds;
 }
 
 /**

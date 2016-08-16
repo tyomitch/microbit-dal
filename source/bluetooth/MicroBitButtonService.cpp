@@ -86,19 +86,19 @@ void MicroBitButtonService::buttonAUpdate(MicroBitEvent e)
         if (e.value == MICROBIT_BUTTON_EVT_UP)
         {
             buttonADataCharacteristicBuffer = 0;
-            ble.gattServer().notify(buttonADataCharacteristicHandle,(uint8_t *)&buttonADataCharacteristicBuffer, sizeof(buttonADataCharacteristicBuffer));
+            ble.gattServer().write(buttonADataCharacteristicHandle,(uint8_t *)&buttonADataCharacteristicBuffer, sizeof(buttonADataCharacteristicBuffer));
         }
 
         if (e.value == MICROBIT_BUTTON_EVT_DOWN)
         {
             buttonADataCharacteristicBuffer = 1;
-            ble.gattServer().notify(buttonADataCharacteristicHandle,(uint8_t *)&buttonADataCharacteristicBuffer, sizeof(buttonADataCharacteristicBuffer));
+            ble.gattServer().write(buttonADataCharacteristicHandle,(uint8_t *)&buttonADataCharacteristicBuffer, sizeof(buttonADataCharacteristicBuffer));
         }
 
         if (e.value == MICROBIT_BUTTON_EVT_HOLD)
         {
             buttonADataCharacteristicBuffer = 2;
-            ble.gattServer().notify(buttonADataCharacteristicHandle,(uint8_t *)&buttonADataCharacteristicBuffer, sizeof(buttonADataCharacteristicBuffer));
+            ble.gattServer().write(buttonADataCharacteristicHandle,(uint8_t *)&buttonADataCharacteristicBuffer, sizeof(buttonADataCharacteristicBuffer));
         }
     }
 }
@@ -113,19 +113,19 @@ void MicroBitButtonService::buttonBUpdate(MicroBitEvent e)
         if (e.value == MICROBIT_BUTTON_EVT_UP)
         {
             buttonBDataCharacteristicBuffer = 0;
-            ble.gattServer().notify(buttonBDataCharacteristicHandle,(uint8_t *)&buttonBDataCharacteristicBuffer, sizeof(buttonBDataCharacteristicBuffer));
+            ble.gattServer().write(buttonBDataCharacteristicHandle,(uint8_t *)&buttonBDataCharacteristicBuffer, sizeof(buttonBDataCharacteristicBuffer));
         }
 
         if (e.value == MICROBIT_BUTTON_EVT_DOWN)
         {
             buttonBDataCharacteristicBuffer = 1;
-            ble.gattServer().notify(buttonBDataCharacteristicHandle,(uint8_t *)&buttonBDataCharacteristicBuffer, sizeof(buttonBDataCharacteristicBuffer));
+            ble.gattServer().write(buttonBDataCharacteristicHandle,(uint8_t *)&buttonBDataCharacteristicBuffer, sizeof(buttonBDataCharacteristicBuffer));
         }
 
         if (e.value == MICROBIT_BUTTON_EVT_HOLD)
         {
             buttonBDataCharacteristicBuffer = 2;
-            ble.gattServer().notify(buttonBDataCharacteristicHandle,(uint8_t *)&buttonBDataCharacteristicBuffer, sizeof(buttonBDataCharacteristicBuffer));
+            ble.gattServer().write(buttonBDataCharacteristicHandle,(uint8_t *)&buttonBDataCharacteristicBuffer, sizeof(buttonBDataCharacteristicBuffer));
         }
     }
 }

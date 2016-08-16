@@ -168,12 +168,6 @@ class MicroBitBLEManager : MicroBitComponent
      */
     void advertise();
 
-    /**
-     * Determines the number of devices currently bonded with this micro:bit.
-     * @return The number of active bonds.
-     */
-    int getBondCount();
-
 	/**
 	 * A request to pair has been received from a BLE device.
      * If we're in pairing mode, display the passkey to the user.

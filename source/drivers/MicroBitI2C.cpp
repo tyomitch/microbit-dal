@@ -82,7 +82,7 @@ int MicroBitI2C::read(int address, char *data, int length, bool repeated)
         nrf_delay_us(5);
         _i2c.i2c->POWER        = 1;
         _i2c.i2c->ENABLE       = TWI_ENABLE_ENABLE_Enabled << TWI_ENABLE_ENABLE_Pos;
-        twi_master_init_and_clear();
+        twi_master_init_and_clear(NRF_TWI0);
         result = I2C::read(address,data,length,repeated);
         retries++;
     }
@@ -121,7 +121,7 @@ int MicroBitI2C::write(int address, const char *data, int length, bool repeated)
         _i2c.i2c->POWER        = 1;
         _i2c.i2c->ENABLE       = TWI_ENABLE_ENABLE_Enabled << TWI_ENABLE_ENABLE_Pos;
 
-        twi_master_init_and_clear();
+        twi_master_init_and_clear(NRF_TWI0);
         result = I2C::write(address,data,length,repeated);
         retries++;
     }

@@ -80,7 +80,7 @@ void MicroBitTemperatureService::temperatureUpdate(MicroBitEvent)
     if (ble.getGapState().connected)
     {
         temperatureDataCharacteristicBuffer = thermometer.getTemperature();
-        ble.gattServer().notify(temperatureDataCharacteristicHandle,(uint8_t *)&temperatureDataCharacteristicBuffer, sizeof(temperatureDataCharacteristicBuffer));
+        ble.gattServer().write(temperatureDataCharacteristicHandle,(uint8_t *)&temperatureDataCharacteristicBuffer, sizeof(temperatureDataCharacteristicBuffer));
     }
 }
 

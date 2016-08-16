@@ -127,7 +127,7 @@ void MicroBitEventService::onMicroBitEvent(MicroBitEvent evt)
         e->type = evt.source;
         e->reason = evt.value;
 
-        ble.gattServer().notify(microBitEventCharacteristicHandle, (const uint8_t *)e, sizeof(EventServiceEvent));
+        ble.gattServer().write(microBitEventCharacteristicHandle, (const uint8_t *)e, sizeof(EventServiceEvent));
     }
 }
 

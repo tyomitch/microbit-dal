@@ -235,7 +235,7 @@ void MicroBitIOPinService::onDataRead(GattReadAuthCallbackParams *params)
 
         // If there's any data, issue a BLE notification.
         if (pairs > 0)
-            ble.gattServer().notify(ioPinServiceDataCharacteristic->getValueHandle(), (uint8_t *)ioPinServiceDataCharacteristicBuffer, pairs * sizeof(IOData));
+            ble.gattServer().write(ioPinServiceDataCharacteristic->getValueHandle(), (uint8_t *)ioPinServiceDataCharacteristicBuffer, pairs * sizeof(IOData));
     }
 }
 
@@ -286,7 +286,7 @@ void MicroBitIOPinService::idleTick()
 
     // If there were any changes, issue a BLE notification.
     if (pairs > 0)
-        ble.gattServer().notify(ioPinServiceDataCharacteristic->getValueHandle(), (uint8_t *)ioPinServiceDataCharacteristicBuffer, pairs * sizeof(IOData));
+        ble.gattServer().write(ioPinServiceDataCharacteristic->getValueHandle(), (uint8_t *)ioPinServiceDataCharacteristicBuffer, pairs * sizeof(IOData));
 }
 
 const uint8_t  MicroBitIOPinServiceUUID[] = {
