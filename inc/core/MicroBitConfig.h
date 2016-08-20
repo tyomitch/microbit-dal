@@ -59,7 +59,7 @@ DEALINGS IN THE SOFTWARE.
 
 // Amount of memory reserved for the stack at the end of memory (bytes).
 #ifndef MICROBIT_STACK_SIZE
-#define MICROBIT_STACK_SIZE                     2048
+#define MICROBIT_STACK_SIZE                     ISR_STACK_SIZE
 #endif
 
 // Physical address of the end of mbed heap space.
