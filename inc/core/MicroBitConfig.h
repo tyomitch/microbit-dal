@@ -57,11 +57,6 @@ DEALINGS IN THE SOFTWARE.
 #define MICROBIT_SD_GATT_TABLE_START            0x20001900
 #endif
 
-// Physical address of the top of the system stack (on mbed-classic this is the top of SRAM)
-#ifndef CORTEX_M0_STACK_BASE
-#define CORTEX_M0_STACK_BASE                    MICROBIT_SRAM_END
-#endif
-
 // Amount of memory reserved for the stack at the end of memory (bytes).
 #ifndef MICROBIT_STACK_SIZE
 #define MICROBIT_STACK_SIZE                     2048
@@ -69,7 +64,7 @@ DEALINGS IN THE SOFTWARE.
 
 // Physical address of the end of mbed heap space.
 #ifndef MICROBIT_HEAP_END
-#define MICROBIT_HEAP_END                       (CORTEX_M0_STACK_BASE - MICROBIT_STACK_SIZE)
+#define MICROBIT_HEAP_END                       (MICROBIT_SRAM_END - MICROBIT_STACK_SIZE)
 #endif
 
 // Enables or disables the MicroBitHeapllocator. Note that if disabled, no reuse of the SRAM normally

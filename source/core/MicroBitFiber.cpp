@@ -35,6 +35,9 @@ DEALINGS IN THE SOFTWARE.
 #include "MicroBitFiber.h"
 #include "MicroBitSystemTimer.h"
 
+extern osThreadDef_t os_thread_def_main;
+static const uint32_t mbed_stack_base = (uint32_t)os_thread_def_main.stack_pointer + os_thread_def_main.stacksize;
+
 /*
  * Statically allocated values used to create and destroy Fibers.
  * required to be defined here to allow persistence during context switches.
@@ -169,7 +172,7 @@ Fiber *getFiberContext()
 
     // Ensure this fiber is in suitable state for reuse.
     f->flags = 0;
-    f->tcb.stack_base = CORTEX_M0_STACK_BASE;
+    f->tcb.stack_base = mbed_stack_base;
 
     return f;
 }
@@ -202,7 +205,7 @@ void scheduler_init(EventModel &_messageBus)
     // Create the IDLE fiber.
     // Configure the fiber to directly enter the idle task.
     idleFiber = getFiberContext();
-    idleFiber->tcb.SP = CORTEX_M0_STACK_BASE - 0x04;
+    idleFiber->tcb.SP = mbed_stack_base - 0x4;
     idleFiber->tcb.LR = (uint32_t) &idle_task;
 
 	if (messageBus)
@@ -636,7 +639,7 @@ Fiber *__create_fiber(uint32_t ep, uint32_t cp, uint32_t pm, int parameterised)
     newFiber->tcb.R2 = (uint32_t) pm;
 
     // Set the stack and assign the link register to refer to the appropriate entry point wrapper.
-    newFiber->tcb.SP = CORTEX_M0_STACK_BASE - 0x04;
+    newFiber->tcb.SP = mbed_stack_base - 0x4;
     newFiber->tcb.LR = parameterised ? (uint32_t) &launch_new_fiber_param : (uint32_t) &launch_new_fiber;
 
     // Add new fiber to the run queue.
@@ -734,7 +737,7 @@ void verify_stack_size(Fiber *f)
     uint32_t bufferSize;
 
     // Calculate the stack depth.
-    stackDepth = f->tcb.stack_base - ((uint32_t) __get_MSP());
+    stackDepth = f->tcb.stack_base - ((uint32_t) __get_PSP());
 
     // Calculate the size of our allocated stack buffer
     bufferSize = f->stack_top - f->stack_bottom;
@@ -850,7 +853,7 @@ void schedule()
         // Special case for the idle task, as we don't maintain a stack context (just to save memory).
         if (currentFiber == idleFiber)
         {
-            idleFiber->tcb.SP = CORTEX_M0_STACK_BASE - 0x04;
+            idleFiber->tcb.SP = mbed_stack_base - 0x4;
             idleFiber->tcb.LR = (uint32_t) &idle_task;
         }
 
